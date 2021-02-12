@@ -1,5 +1,5 @@
 [package]
-name = "rust_fps"
+name = "radwars"
 version = "0.1.0"
 authors = ["Dmajster <domen.rostohar98@gmail.com>"]
 edition = "2018"

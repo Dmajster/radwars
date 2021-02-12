@@ -2803,6 +2803,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "radwars"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bincode",
+ "serde",
+ "steamworks",
+]
+
+[[package]]
 name = "rand"
 version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2947,16 +2957,6 @@ dependencies = [
  "base64 0.13.0",
  "bitflags",
  "serde",
-]
-
-[[package]]
-name = "rust_fps"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bincode",
- "serde",
- "steamworks",
 ]
 
 [[package]]
