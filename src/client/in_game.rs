@@ -1,7 +1,7 @@
 use bevy::{core::FixedTimestep, prelude::*};
 
-use crate::shared::game_message::{ClientInputData, GameMessageType};
 use crate::client::udp_client::UdpManager;
+use crate::shared::game_message::{ClientInputData, GameMessageType};
 
 #[derive(Default)]
 pub struct InGamePlugin {}

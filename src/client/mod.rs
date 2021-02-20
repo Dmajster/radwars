@@ -3,21 +3,14 @@ use bevy::{
     text::TextPlugin, ui::UiPlugin, wgpu::WgpuPlugin, window::WindowPlugin, winit::WinitPlugin,
 };
 
-mod udp_client;
-mod steam;
+use crate::shared::gameplay::GameplayPlugin;
+
 mod in_game;
-use in_game::InGamePlugin;
 
-#[cfg(feature = "steam")]
-use steamworks::{AppId, Client, FriendFlags, PersonaStateChange};
+mod steam;
+use steam::SteamPlugin;
 
-#[cfg(feature = "steam")]
-fn init_steam() {
-    let (client, single) = Client::init().unwrap();
-}
-
-#[cfg(not(feature = "steam"))]
-fn init_steam() {}
+mod udp_client;
 
 pub fn init(app_builder: &mut AppBuilder) {
     app_builder.add_plugins(ClientPlugins);
@@ -36,10 +29,12 @@ impl PluginGroup for ClientPlugins {
         group.add(WinitPlugin::default());
         group.add(WgpuPlugin::default());
 
-        group.add(InGamePlugin::default());
+        //group.add(InGamePlugin::default()); TODO: Add this networking to gameplay plugin
+
+        group.add(GameplayPlugin::default());
 
         if cfg!(feature = "steam") {
-            init_steam();
+            group.add(SteamPlugin::default());
         }
     }
 }

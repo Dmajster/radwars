@@ -1,6 +1,12 @@
-use bevy::{asset::AssetPlugin, core::CorePlugin, diagnostic::DiagnosticsPlugin, input::InputPlugin, log::LogPlugin, prelude::PluginGroup, reflect::ReflectPlugin, scene::ScenePlugin, transform::TransformPlugin};
+use bevy::{
+    asset::AssetPlugin, core::CorePlugin, diagnostic::DiagnosticsPlugin, input::InputPlugin,
+    log::LogPlugin, prelude::PluginGroup, reflect::ReflectPlugin, scene::ScenePlugin,
+    transform::TransformPlugin,
+};
 
 pub mod game_message;
+
+pub mod gameplay;
 
 pub struct SharedPlugins;
 impl PluginGroup for SharedPlugins {
