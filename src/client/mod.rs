@@ -3,10 +3,6 @@ use bevy::{
     text::TextPlugin, ui::UiPlugin, wgpu::WgpuPlugin, window::WindowPlugin, winit::WinitPlugin,
 };
 
-use crate::shared::gameplay::GameplayPlugin;
-
-mod in_game;
-
 mod steam;
 use steam::SteamPlugin;
 
@@ -30,8 +26,6 @@ impl PluginGroup for ClientPlugins {
         group.add(WgpuPlugin::default());
 
         //group.add(InGamePlugin::default()); TODO: Add this networking to gameplay plugin
-
-        group.add(GameplayPlugin::default());
 
         if cfg!(feature = "steam") {
             group.add(SteamPlugin::default());

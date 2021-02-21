@@ -1,3 +1,6 @@
+#![feature(vec_into_raw_parts)]
+#![feature(min_const_generics)]
+
 use bevy::prelude::App;
 
 mod shared;

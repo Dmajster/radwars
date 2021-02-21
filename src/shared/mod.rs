@@ -1,12 +1,13 @@
 use bevy::{
-    asset::AssetPlugin, core::CorePlugin, diagnostic::DiagnosticsPlugin, input::InputPlugin,
-    log::LogPlugin, prelude::PluginGroup, reflect::ReflectPlugin, scene::ScenePlugin,
-    transform::TransformPlugin,
+    asset::AssetPlugin, core::CorePlugin, diagnostic::DiagnosticsPlugin, gltf::GltfPlugin,
+    input::InputPlugin, log::LogPlugin, prelude::PluginGroup, reflect::ReflectPlugin,
+    scene::ScenePlugin, transform::TransformPlugin,
 };
 
 pub mod game_message;
 
 pub mod gameplay;
+use gameplay::GameplayPlugin;
 
 pub struct SharedPlugins;
 impl PluginGroup for SharedPlugins {
@@ -19,5 +20,9 @@ impl PluginGroup for SharedPlugins {
         group.add(InputPlugin::default());
         group.add(AssetPlugin::default());
         group.add(ScenePlugin::default());
+
+        group.add(GltfPlugin::default());
+
+        group.add(GameplayPlugin::default());
     }
 }
