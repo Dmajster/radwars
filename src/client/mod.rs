@@ -12,6 +12,14 @@ mod developer;
 use developer::DeveloperPlugin;
 
 pub fn init(app_builder: &mut AppBuilder) {
+    app_builder.insert_resource(WindowDescriptor {
+        title: "Radwars".to_string(),
+        width: 1024.0,
+        height: 768.0,
+        vsync: false,
+        ..Default::default()
+    });
+
     app_builder.add_plugins(ClientPlugins);
 }
 
