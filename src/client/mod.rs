@@ -3,25 +3,16 @@ use bevy::{
     text::TextPlugin, ui::UiPlugin, wgpu::WgpuPlugin, window::WindowPlugin, winit::WinitPlugin,
 };
 
-use bevy_egui::{EguiContext, EguiPlugin, egui::Window};
-
 mod steam;
 use steam::SteamPlugin;
 
 mod udp_client;
 
+mod developer;
+use developer::DeveloperPlugin;
+
 pub fn init(app_builder: &mut AppBuilder) {
     app_builder.add_plugins(ClientPlugins);
-    app_builder.add_plugin(EguiPlugin);
-    app_builder.add_system(ui_example.system());
-}
-
-fn ui_example(mut egui_context: ResMut<EguiContext>) {
-    let ctx = &mut egui_context.ctx;
-
-    Window::new("Hello").show(ctx, |ui| {
-        ui.label("world");
-    });
 }
 
 pub struct ClientPlugins;
@@ -42,5 +33,11 @@ impl PluginGroup for ClientPlugins {
         if cfg!(feature = "steam") {
             group.add(SteamPlugin::default());
         }
+
+        // if cfg!(debug_assertions) {
+        //     group.add(DeveloperPlugin::default());
+        // }
+
+        group.add(DeveloperPlugin::default());
     }
 }
