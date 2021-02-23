@@ -11,6 +11,10 @@ impl Plugin for DeveloperPlugin {
             last_measurment_instant: Instant::now(),
         });
         app_builder.add_system(fps_counter.system());
+
+        if cfg!(feature = "steam") {
+            app_builder.add_system(steam.system());
+        }
     }
 }
 
@@ -25,13 +29,26 @@ fn fps_counter(
 ) {
     let egui_context = &mut resource_egui_context.ctx;
 
-    let frame_duration = fps_counter_context
-        .last_measurment_instant
-        .elapsed()
-        .as_secs_f64();
+    let frame_duration = fps_counter_context.last_measurment_instant.elapsed().as_secs_f64() * 1000.0;
+
     fps_counter_context.last_measurment_instant = Instant::now();
 
     Window::new("Dev menu").show(egui_context, |ui| {
-        ui.label(format!("fps: {}s", 1.0 / frame_duration));
+        ui.label(format!("frame time: {:.2}ms", frame_duration));
     });
 }
+
+#[cfg(not(feature = "steam"))]
+fn steam() {}
+
+#[cfg(feature = "steam")]
+fn steam(
+    mut resource_egui_context: ResMut<EguiContext>,
+) {
+    let egui_context = &mut resource_egui_context.ctx;
+
+    Window::new("Dev menu Steam").show(egui_context, |ui| {
+        ui.label(format!("friends"));
+    });
+}
+

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[cfg(feature = "server")]
+#[cfg(feature = "steam")]
 use steamworks::{AppId, Client, FriendFlags, PersonaStateChange};
 
 #[derive(Default)]
