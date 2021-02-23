@@ -5,6 +5,7 @@ use bevy_rapier3d::{
     rapier::{
         dynamics::{RigidBodyBuilder, RigidBodySet},
         geometry::ColliderBuilder,
+        pipeline::QueryPipeline,
     },
     render::RapierRenderPlugin,
 };
@@ -17,6 +18,7 @@ impl Plugin for GameplayPlugin {
         app_builder
             .add_startup_system(setup.system())
             .insert_resource(SceneInstance::default())
+            .insert_resource(QueryPipeline::default())
             .add_plugin(RapierPhysicsPlugin)
             .add_plugin(RapierRenderPlugin)
             .add_system(local_player_input.system())
@@ -33,16 +35,6 @@ fn setup(
     mut scene_spawner: ResMut<SceneSpawner>,
     mut scene_instance: ResMut<SceneInstance>,
 ) {
-    // let map_handle = asset_server.load("models/test_map.gltf#Mesh0/Primitive0");
-
-    // //Map
-    // commands.spawn(PbrBundle {
-    //     mesh: map_handle,
-    //     material: materials.add(Color::rgb(0.5, 0.5, 0.5).into()),
-    //     transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
-    //     ..Default::default()
-    // });
-
     let test_scene_id = scene_spawner.spawn(asset_server.load("models/test_map.gltf#Scene0"));
     scene_instance.0 = Some(test_scene_id);
 
@@ -66,16 +58,6 @@ fn setup(
                 ..Default::default()
             });
         });
-
-    // // plane
-    // commands
-    //     .spawn(PbrBundle {
-    //         mesh: meshes.add(Mesh::from(shape::Plane { size: 20.0 })),
-    //         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-    //         ..Default::default()
-    //     })
-    //     .with(RigidBodyBuilder::new_static())
-    //     .with(ColliderBuilder::cuboid(10.0, 0.001, 10.0));
 
     // cube
     commands
@@ -140,7 +122,7 @@ fn move_player(
             // POSITION
             let mut input_vector = Vec3::default();
             let movement_speed = 5.0;
-            let mouse_speed = 1.4;
+            let mouse_speed = 1.0;
 
             if player_input.move_right {
                 input_vector.x += 1.0;
@@ -212,11 +194,7 @@ fn scene_update(
         if let Some(instance_id) = scene_instance.0 {
             if let Some(entity_iter) = scene_spawner.iter_instance_entities(instance_id) {
                 entity_iter.for_each(|entity| {
-                    println!("entity: {:#?}", entity);
-
                     if let Ok(mesh_handle) = mesh_query.get_component::<Handle<Mesh>>(entity) {
-                        println!("mesh handle: {:#?}", mesh_handle);
-
                         if let Some(mesh) = meshes.get(mesh_handle) {
                             let bytes = mesh.get_vertex_buffer_data();
                             let format = mesh.get_vertex_buffer_layout();
@@ -227,43 +205,35 @@ fn scene_update(
                                 .iter()
                                 .find(|attribute| attribute.name == "Vertex_Position")
                             {
-                                
-
                                 let initial_offset = position_attribute.offset as usize;
                                 let position_count = 12 as usize;
 
                                 let mut position_bytes: Vec<u8> = Vec::new();
                                 let mut take_index = initial_offset;
                                 while take_index < bytes.len() {
-                                    position_bytes.extend_from_slice(&bytes[take_index..(take_index+position_count)]);
+                                    position_bytes.extend_from_slice(
+                                        &bytes[take_index..(take_index + position_count)],
+                                    );
 
                                     take_index += stride_count;
                                 }
 
-                                let positions: Vec<bevy_rapier3d::na::Point<f32, bevy_rapier3d::na::U3>> =
-                                    convert_using_into_raw_parts(position_bytes);
-
-                                //println!("positions: {:?}", positions.len());
+                                let positions: Vec<
+                                    bevy_rapier3d::na::Point<f32, bevy_rapier3d::na::U3>,
+                                > = convert_using_into_raw_parts(position_bytes);
 
                                 match mesh.indices().unwrap() {
-                                    bevy::render::mesh::Indices::U16(vec) => {}
+                                    bevy::render::mesh::Indices::U16(_) => {}
                                     bevy::render::mesh::Indices::U32(vec) => {
-                                        println!("old indices: {:?}", vec);
-                                        
                                         let indices: Vec<[u32; 3]> = group_vec(vec.clone());
-
-                                        println!("indices: {:?}", indices);
-
                                         commands.insert_one(entity, RigidBodyBuilder::new_static());
                                         commands.insert_one(
                                             entity,
-                                            ColliderBuilder::trimesh(positions, indices)
+                                            ColliderBuilder::trimesh(positions, indices),
                                         );
                                     }
                                 };
                             }
-
-                            println!("format: {:#?}", format);
                         }
                     }
                 });

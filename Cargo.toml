@@ -7,8 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 bevy = { git = "https://github.com/bevyengine/bevy" }
-#bevy_rapier3d = { version = "*", features = ["simd-stable","parallel"] }
-bevy_rapier3d = { git = "https://github.com/alec-deason/bevy_rapier", branch = "tracking_changes_for_bevy_0.5" }
+bevy_rapier3d = { git = "https://github.com/alec-deason/bevy_rapier", branch = "tracking_changes_for_bevy_0.5", features = ["simd-stable","parallel"] }
+#bevy_egui = { git = "https://github.com/mvlabat/bevy_egui", branch = "bevy-0.5" }
+bevy_egui = { git = "https://github.com/jakobhellermann/bevy_egui/", branch = "bevy-0.5" }
 
 serde = { version = "1.0", features = ["derive"] }
 bincode = "1.3.1"

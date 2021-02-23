@@ -1,5 +1,6 @@
 #![feature(vec_into_raw_parts)]
 #![feature(min_const_generics)]
+#![feature(array_chunks)] //TODO remove unsafe from collider mesh generation with this?
 
 use bevy::prelude::App;
 
