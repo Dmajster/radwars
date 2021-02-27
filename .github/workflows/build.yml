@@ -7,7 +7,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: table
+          toolchain: nightly
+          override: true
       - name: build
         uses: actions-rs/cargo@v1
         with:
