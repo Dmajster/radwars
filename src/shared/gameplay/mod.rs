@@ -1,10 +1,16 @@
-use std::convert::TryInto;
+use core::panic;
+use std::{convert::TryInto, error::Error};
 
-use bevy::{input::mouse::MouseMotion, prelude::*, scene::InstanceId};
+use bevy::{prelude::*, scene::InstanceId};
 
 mod player_movement;
 use heron::{Body, Gravity, PhysicsPlugin, Velocity};
 use player_movement::move_player;
+
+mod player_input;
+use player_input::local_player_input;
+
+use crate::shared::gameplay::player_input::PlayerInput;
 
 #[derive(Default)]
 pub struct GameplayPlugin {}
@@ -13,7 +19,7 @@ impl Plugin for GameplayPlugin {
     fn build(&self, app_builder: &mut bevy::prelude::AppBuilder) {
         app_builder
             .add_plugin(PhysicsPlugin::default()) // Add the plugin
-            //.insert_resource(Gravity::from(Vec3::new(0.0, -9.81, 0.0))) // Optionally define gravity
+            .insert_resource(Gravity::from(Vec3::new(0.0, -9.81, 0.0))) // Optionally define gravity
             .add_startup_system(setup.system())
             .insert_resource(SceneInstance::default())
             .add_system(local_player_input.system())
@@ -76,39 +82,6 @@ fn setup(
     asset_server.watch_for_changes().unwrap();
 }
 
-#[derive(Debug, Default)]
-pub struct PlayerInput {
-    move_left: bool,
-    move_right: bool,
-    move_forward: bool,
-    move_back: bool,
-
-    mouse_horizontal: f32,
-    mouse_vertical: f32,
-}
-
-fn local_player_input(
-    mut query: Query<&mut PlayerInput>,
-    mut mouse_motion_events: EventReader<MouseMotion>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    let mut mouse_motion_vector = Vec2::default();
-
-    for event in mouse_motion_events.iter() {
-        mouse_motion_vector -= event.delta;
-    }
-
-    for mut player_input in query.iter_mut() {
-        player_input.move_forward = keyboard_input.pressed(KeyCode::W);
-        player_input.move_back = keyboard_input.pressed(KeyCode::S);
-        player_input.move_left = keyboard_input.pressed(KeyCode::A);
-        player_input.move_right = keyboard_input.pressed(KeyCode::D);
-
-        player_input.mouse_horizontal = mouse_motion_vector.x;
-        player_input.mouse_vertical = mouse_motion_vector.y;
-    }
-}
-
 #[derive(Default)]
 struct SceneInstance(Option<InstanceId>);
 
@@ -126,77 +99,7 @@ fn scene_update(
                 entity_iter.for_each(|entity| {
                     if let Ok(mesh_handle) = mesh_query.get_component::<Handle<Mesh>>(entity) {
                         if let Some(mesh) = meshes.get(mesh_handle) {
-                            let bytes = mesh.get_vertex_buffer_data();
-                            let format = mesh.get_vertex_buffer_layout();
-                            let stride_count = format.stride as usize;
-
-                            if let Some(position_attribute) = format
-                                .attributes
-                                .iter()
-                                .find(|attribute| attribute.name == "Vertex_Position")
-                            {
-                                let position_offset = position_attribute.offset as usize;
-
-                                let position_byte_chunks: Vec<[u8; 12]> = bytes
-                                    // Split bytes into byte slices the size of individual vertex
-                                    .chunks_exact(stride_count)
-                                    // Take 12 bytes from the offset where position starts (12 => Vec3(f32,f32,f32))
-                                    .map(|vertex_bytes| {
-                                        let position_bytes_slice: [u8; 12] = vertex_bytes
-                                            [position_offset..position_offset + 12]
-                                            .try_into()
-                                            .unwrap();
-                                        position_bytes_slice
-                                    })
-                                    .collect();
-
-                                let position_bytes = position_byte_chunks.concat();
-
-                                let position_floats: Vec<f32> = position_bytes
-                                    // Create slices of &[u8]
-                                    .chunks_exact(4)
-                                    // Try map &[u8] to &[u8; 4]
-                                    .map(|c| c.try_into().unwrap())
-                                    // Map &[u8; 4] to f32
-                                    .map(|bytes| f32::from_le_bytes(bytes))
-                                    .collect();
-
-                                let positions: Vec<Vec3> = position_floats
-                                    // Create slices of &[f32]
-                                    .chunks_exact(3)
-                                    // Map &[f32] to Vec3
-                                    .map(|floats| Vec3::new(floats[0], floats[1], floats[2]))
-                                    .collect();
-
-                                let indices: Vec<[u32; 3]> = match mesh.indices().unwrap() {
-                                    bevy::render::mesh::Indices::U16(vec) => {
-                                        let short_indices: Vec<u32> = vec
-                                            .iter()
-                                            // Map u16 to u32
-                                            .map(|u| *u as u32)
-                                            .collect();
-
-                                        short_indices
-                                            // Create slices of &[u32]
-                                            .chunks_exact(3)
-                                            // Try map &[u32] to &[u32; 3]
-                                            .map(|c| c.try_into().unwrap())
-                                            .collect()
-                                    }
-                                    bevy::render::mesh::Indices::U32(vec) => {
-                                        vec
-                                            // Create slices of &[u32]
-                                            .chunks_exact(3)
-                                            // Try map &[u32] to &[u32; 3]
-                                            .map(|c| c.try_into().unwrap())
-                                            .collect()
-                                    }
-                                };
-
-                                println!("positions: len: '{}', {:#?}", positions.len(), positions);
-
-                                println!("indices: len: '{}'", indices.len());
-
+                            if let Ok((positions, indices)) = get_mesh_positions_and_indices(mesh) {
                                 commands.insert_one(entity, Body::TriMesh { positions, indices });
                             }
                         }
@@ -206,4 +109,81 @@ fn scene_update(
             }
         }
     }
+}
+
+fn get_mesh_positions_and_indices(
+    mesh: &Mesh,
+) -> Result<(Vec<Vec3>, Vec<[u32; 3]>), Box<dyn Error>> {
+    let bytes = mesh.get_vertex_buffer_data();
+    let format = mesh.get_vertex_buffer_layout();
+    let stride_count = format.stride as usize;
+
+    if let Some(position_attribute) = format
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == "Vertex_Position")
+    {
+        let position_offset = position_attribute.offset as usize;
+
+        let position_byte_chunks: Vec<[u8; 12]> = bytes
+            // Split bytes into byte slices the size of individual vertex
+            .chunks_exact(stride_count)
+            // Take 12 bytes from the offset where position starts (12 => Vec3(f32,f32,f32))
+            .map(|vertex_bytes| {
+                let position_bytes_slice: [u8; 12] = vertex_bytes
+                    [position_offset..position_offset + 12]
+                    .try_into()
+                    .unwrap();
+
+                position_bytes_slice
+            })
+            .collect();
+
+        let position_bytes = position_byte_chunks.concat();
+
+        let position_floats: Vec<f32> = position_bytes
+            // Create slices of &[u8]
+            .chunks_exact(4)
+            // Try map &[u8] to &[u8; 4]
+            .map(|c| c.try_into().unwrap())
+            // Map &[u8; 4] to f32
+            .map(|bytes| f32::from_le_bytes(bytes))
+            .collect();
+
+        let positions: Vec<Vec3> = position_floats
+            // Create slices of &[f32]
+            .chunks_exact(3)
+            // Map &[f32] to Vec3
+            .map(|floats| Vec3::new(floats[0], floats[1], floats[2]))
+            .collect();
+
+        let indices: Vec<[u32; 3]> = match mesh.indices().unwrap() {
+            bevy::render::mesh::Indices::U16(vec) => {
+                let short_indices: Vec<u32> = vec
+                    .iter()
+                    // Map u16 to u32
+                    .map(|u| *u as u32)
+                    .collect();
+
+                short_indices
+                    // Create slices of &[u32]
+                    .chunks_exact(3)
+                    // Try map &[u32] to &[u32; 3]
+                    .map(|c| c.try_into().unwrap())
+                    .collect()
+            }
+            bevy::render::mesh::Indices::U32(vec) => {
+                vec
+                    // Create slices of &[u32]
+                    .chunks_exact(3)
+                    // Try map &[u32] to &[u32; 3]
+                    .map(|c| c.try_into().unwrap())
+                    .collect()
+            }
+        };
+
+        return Ok((positions, indices));
+    }
+
+    panic!("Mesh doesn't have a Vertex_Position attribute")
 }

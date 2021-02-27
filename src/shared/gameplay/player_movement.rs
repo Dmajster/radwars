@@ -1,7 +1,7 @@
 use bevy::{core::Time, math::Vec3, prelude::*};
 use heron::{AxisAngle, Velocity};
 
-use crate::shared::gameplay::PlayerInput;
+use crate::shared::gameplay::player_input::PlayerInput;
 
 pub fn move_player(
     time: Res<Time>,
