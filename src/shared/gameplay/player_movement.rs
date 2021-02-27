@@ -3,7 +3,7 @@ use heron::{AxisAngle, Velocity};
 
 use crate::shared::gameplay::player_input::PlayerInput;
 
-pub fn move_player(
+pub fn player_movement(
     time: Res<Time>,
     mut transform_query: Query<&mut Transform>,
     mut player_query: Query<(Entity, &Children, &mut Velocity, &PlayerInput)>,

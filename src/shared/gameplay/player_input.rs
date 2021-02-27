@@ -11,7 +11,7 @@ pub struct PlayerInput {
     pub mouse_vertical: f32,
 }
 
-pub fn local_player_input(
+pub fn player_local_input(
     mut query: Query<&mut PlayerInput>,
     mut mouse_motion_events: EventReader<MouseMotion>,
     keyboard_input: Res<Input<KeyCode>>,

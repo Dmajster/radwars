@@ -5,10 +5,10 @@ use bevy::{prelude::*, scene::InstanceId};
 
 mod player_movement;
 use heron::{Body, Gravity, PhysicsPlugin, Velocity};
-use player_movement::move_player;
+use player_movement::player_movement;
 
 mod player_input;
-use player_input::local_player_input;
+use player_input::player_local_input;
 
 use crate::shared::gameplay::player_input::PlayerInput;
 
@@ -22,8 +22,8 @@ impl Plugin for GameplayPlugin {
             .insert_resource(Gravity::from(Vec3::new(0.0, -9.81, 0.0))) // Optionally define gravity
             .add_startup_system(setup.system())
             .insert_resource(SceneInstance::default())
-            .add_system(local_player_input.system())
-            .add_system(move_player.system())
+            .add_system(player_local_input.system())
+            .add_system(player_movement.system())
             .add_system(scene_update.system());
     }
 }
@@ -99,7 +99,7 @@ fn scene_update(
                 entity_iter.for_each(|entity| {
                     if let Ok(mesh_handle) = mesh_query.get_component::<Handle<Mesh>>(entity) {
                         if let Some(mesh) = meshes.get(mesh_handle) {
-                            if let Ok((positions, indices)) = get_mesh_positions_and_indices(mesh) {
+                            if let Ok((positions, indices)) = mesh_extract_positions_and_indices(mesh) {
                                 commands.insert_one(entity, Body::TriMesh { positions, indices });
                             }
                         }
@@ -111,7 +111,7 @@ fn scene_update(
     }
 }
 
-fn get_mesh_positions_and_indices(
+fn mesh_extract_positions_and_indices(
     mesh: &Mesh,
 ) -> Result<(Vec<Vec3>, Vec<[u32; 3]>), Box<dyn Error>> {
     let bytes = mesh.get_vertex_buffer_data();
