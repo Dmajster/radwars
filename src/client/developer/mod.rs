@@ -11,6 +11,7 @@ impl Plugin for DeveloperPlugin {
             last_measurment_instant: Instant::now(),
         });
         app_builder.add_system(fps_counter.system());
+        app_builder.add_system(distance_raycast.system());
 
         if cfg!(feature = "steam") {
             app_builder.add_system(steam.system());
@@ -29,7 +30,11 @@ fn fps_counter(
 ) {
     let egui_context = &mut resource_egui_context.ctx;
 
-    let frame_duration = fps_counter_context.last_measurment_instant.elapsed().as_secs_f64() * 1000.0;
+    let frame_duration = fps_counter_context
+        .last_measurment_instant
+        .elapsed()
+        .as_secs_f64()
+        * 1000.0;
 
     fps_counter_context.last_measurment_instant = Instant::now();
 
@@ -38,17 +43,22 @@ fn fps_counter(
     });
 }
 
+fn distance_raycast(mut resource_egui_context: ResMut<EguiContext>) {
+    let egui_context = &mut resource_egui_context.ctx;
+
+    Window::new("Raycast").show(egui_context, |ui| {
+        ui.label(format!("distance to aimed object: {:.2}m", 0.0));
+    });
+}
+
 #[cfg(not(feature = "steam"))]
 fn steam() {}
 
 #[cfg(feature = "steam")]
-fn steam(
-    mut resource_egui_context: ResMut<EguiContext>,
-) {
+fn steam(mut resource_egui_context: ResMut<EguiContext>) {
     let egui_context = &mut resource_egui_context.ctx;
 
     Window::new("Dev menu Steam").show(egui_context, |ui| {
         ui.label(format!("friends"));
     });
 }
-
