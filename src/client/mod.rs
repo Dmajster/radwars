@@ -7,8 +7,6 @@ use bevy::{
 mod steam;
 use steam::SteamPlugin;
 
-mod udp_client;
-
 mod developer;
 use developer::DeveloperPlugin;
 
@@ -22,8 +20,6 @@ pub fn init(app_builder: &mut AppBuilder) {
     });
 
     app_builder.add_plugins(ClientPlugins);
-
-
 }
 
 pub struct ClientPlugins;

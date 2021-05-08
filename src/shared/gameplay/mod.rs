@@ -1,16 +1,20 @@
 use core::panic;
 use std::{convert::TryInto, error::Error};
-
 use bevy::{prelude::*, scene::InstanceId};
-
-mod player_movement;
-use heron::{Body, Gravity, PhysicsPlugin, Velocity};
-use player_movement::player_movement;
+use bevy_rapier3d::{
+    physics::RapierPhysicsPlugin,
+    rapier::{dynamics::RigidBodyBuilder, geometry::ColliderBuilder},
+    render::RapierRenderPlugin,
+};
+use nalgebra::Point3;
+use crate::shared::gameplay::player_input::PlayerInput;
 
 mod player_input;
+mod player_movement;
+mod player_shooting;
 use player_input::player_local_input;
-
-use crate::shared::gameplay::player_input::PlayerInput;
+use player_movement::player_movement;
+use player_shooting::player_shooting;
 
 #[derive(Default)]
 pub struct GameplayPlugin {}
@@ -18,18 +22,19 @@ pub struct GameplayPlugin {}
 impl Plugin for GameplayPlugin {
     fn build(&self, app_builder: &mut bevy::prelude::AppBuilder) {
         app_builder
-            .add_plugin(PhysicsPlugin::default()) // Add the plugin
-            .insert_resource(Gravity::from(Vec3::new(0.0, -9.81, 0.0))) // Optionally define gravity
+            .add_plugin(RapierPhysicsPlugin)
+            // .add_plugin(RapierRenderPlugin)
             .add_startup_system(setup.system())
             .insert_resource(SceneInstance::default())
             .add_system(player_local_input.system())
             .add_system(player_movement.system())
+            .add_system(player_shooting.system())
             .add_system(scene_update.system());
     }
 }
 
 fn setup(
-    commands: &mut Commands,
+    mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -41,20 +46,24 @@ fn setup(
 
     // add entities to the world
     commands
-        .spawn(PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Capsule {
+                depth: 1.75,
+                radius: 0.4,
+                ..Default::default()
+            })),
             material: materials.add(Color::rgb(1.0, 0.0, 0.0).into()),
             ..Default::default()
         })
-        .with(Body::Capsule {
-            half_segment: 1.0,
-            radius: 0.5,
-        })
-        .with(Transform::from_xyz(0.0, 8.0, 0.0))
-        .with(Velocity::default())
-        .with(PlayerInput::default())
+        .insert(PlayerInput::default())
+        .insert_bundle((
+            RigidBodyBuilder::new_dynamic()
+                .lock_rotations()
+                .translation(5.0, 20.0, -5.0),
+            ColliderBuilder::capsule_y(1.75, 0.4),
+        ))
         .with_children(|parent| {
-            parent.spawn(PerspectiveCameraBundle {
+            parent.spawn_bundle(PerspectiveCameraBundle {
                 transform: Transform::from_xyz(0.0, 0.0, 0.0),
                 ..Default::default()
             });
@@ -62,19 +71,18 @@ fn setup(
 
     // cube
     commands
-        .spawn(PbrBundle {
+        .spawn_bundle(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
             ..Default::default()
         })
-        .with(Transform::from_xyz(0.0, 100.0, 0.0))
-        .with(Body::Cuboid {
-            half_extends: Vec3::new(0.5, 0.5, 0.5),
-        })
-        .with(Velocity::default());
+        .insert_bundle((
+            RigidBodyBuilder::new_dynamic().translation(5.0, 50.0, -10.0),
+            ColliderBuilder::cuboid(0.5, 0.5, 0.5),
+        ));
 
     // light
-    commands.spawn(LightBundle {
+    commands.spawn_bundle(LightBundle {
         transform: Transform::from_xyz(4.0, 8.0, 4.0),
         ..Default::default()
     });
@@ -86,7 +94,7 @@ fn setup(
 struct SceneInstance(Option<InstanceId>);
 
 fn scene_update(
-    commands: &mut Commands,
+    mut commands: Commands,
     meshes: Res<Assets<Mesh>>,
     scene_spawner: Res<SceneSpawner>,
     scene_instance: Res<SceneInstance>,
@@ -99,8 +107,13 @@ fn scene_update(
                 entity_iter.for_each(|entity| {
                     if let Ok(mesh_handle) = mesh_query.get_component::<Handle<Mesh>>(entity) {
                         if let Some(mesh) = meshes.get(mesh_handle) {
-                            if let Ok((positions, indices)) = mesh_extract_positions_and_indices(mesh) {
-                                commands.insert_one(entity, Body::TriMesh { positions, indices });
+                            if let Ok((positions, indices)) =
+                                mesh_extract_positions_and_indices(mesh)
+                            {
+                                commands
+                                    .entity(entity)
+                                    .insert(RigidBodyBuilder::new_static())
+                                    .insert(ColliderBuilder::trimesh(positions, indices));
                             }
                         }
                     }
@@ -113,7 +126,7 @@ fn scene_update(
 
 fn mesh_extract_positions_and_indices(
     mesh: &Mesh,
-) -> Result<(Vec<Vec3>, Vec<[u32; 3]>), Box<dyn Error>> {
+) -> Result<(Vec<Point3<f32>>, Vec<[u32; 3]>), Box<dyn Error>> {
     let bytes = mesh.get_vertex_buffer_data();
     let format = mesh.get_vertex_buffer_layout();
     let stride_count = format.stride as usize;
@@ -150,11 +163,11 @@ fn mesh_extract_positions_and_indices(
             .map(|bytes| f32::from_le_bytes(bytes))
             .collect();
 
-        let positions: Vec<Vec3> = position_floats
+        let positions: Vec<Point3<f32>> = position_floats
             // Create slices of &[f32]
             .chunks_exact(3)
             // Map &[f32] to Vec3
-            .map(|floats| Vec3::new(floats[0], floats[1], floats[2]))
+            .map(|floats| Point3::<f32>::new(floats[0], floats[1], floats[2]))
             .collect();
 
         let indices: Vec<[u32; 3]> = match mesh.indices().unwrap() {

@@ -1,12 +1,13 @@
 use bevy::{input::mouse::MouseMotion, prelude::*};
 
-#[derive(Debug, Default)]
+#[derive(Reflect, Debug, Default)]
+#[reflect(Component)]
 pub struct PlayerInput {
     pub move_left: bool,
     pub move_right: bool,
     pub move_forward: bool,
     pub move_back: bool,
- 
+
     pub mouse_horizontal: f32,
     pub mouse_vertical: f32,
 }

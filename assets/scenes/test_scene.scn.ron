@@ -1,0 +1,521 @@
+[
+  (
+    entity: 2,
+    components: [
+      {
+        "type": "bevy_transform::components::transform::Transform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (0.0, 100.0, 0.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_transform::components::global_transform::GlobalTransform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (0.0, 100.0, 0.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_render::draw::Draw",
+        "struct": {},
+      },
+      {
+        "type": "bevy_asset::handle::Handle<bevy_render::mesh::mesh::Mesh>",
+        "struct": {
+          "id": {
+            "type": "bevy_asset::handle::HandleId",
+            "value": Id("8ecbac0f-f545-4473-ad43-e1f4243af51e", 6312619169674827834),
+          },
+        },
+      },
+      {
+        "type": "bevy_asset::handle::Handle<bevy_pbr::material::StandardMaterial>",
+        "struct": {
+          "id": {
+            "type": "bevy_asset::handle::HandleId",
+            "value": Id("dace545e-4bc6-4595-a79d-c224fc694975", 8592992897705620199),
+          },
+        },
+      },
+      {
+        "type": "bevy_render::pipeline::render_pipelines::RenderPipelines",
+        "struct": {
+          "pipelines": {
+            "type": "alloc::vec::Vec<bevy_render::pipeline::render_pipelines::RenderPipeline>",
+            "list": [
+              {
+                "type": "bevy_render::pipeline::render_pipelines::RenderPipeline",
+                "struct": {
+                  "pipeline": {
+                    "type": "bevy_asset::handle::Handle<bevy_render::pipeline::pipeline::PipelineDescriptor>",
+                    "struct": {
+                      "id": {
+                        "type": "bevy_asset::handle::HandleId",
+                        "value": Id("ebfc1d11-a2a4-44cb-8f12-c49cc631146c", 13148362314012771389),
+                      },
+                    },
+                  },
+                  "specialization": {
+                    "type": "bevy_render::pipeline::pipeline_compiler::PipelineSpecialization",
+                    "struct": {
+                      "shader_specialization": {
+                        "type": "bevy_render::pipeline::pipeline_compiler::ShaderSpecialization",
+                        "struct": {
+                          "shader_defs": {
+                            "type": "std::collections::hash::set::HashSet<alloc::string::String, ahash::random_state::RandomState>",
+                            "value": [],
+                          },
+                        },
+                      },
+                      "primitive_topology": {
+                        "type": "bevy_render::pipeline::state_descriptors::PrimitiveTopology",
+                        "value": TriangleList,
+                      },
+                      "dynamic_bindings": {
+                        "type": "std::collections::hash::set::HashSet<alloc::string::String, ahash::random_state::RandomState>",
+                        "value": [
+                          "Transform",
+                          "StandardMaterial_albedo",
+                        ],
+                      },
+                      "strip_index_format": {
+                        "type": "core::option::Option<bevy_render::pipeline::state_descriptors::IndexFormat>",
+                        "value": None,
+                      },
+                      "vertex_buffer_layout": {
+                        "type": "bevy_render::pipeline::vertex_buffer_descriptor::VertexBufferLayout",
+                        "value": (
+                          name: "",
+                          stride: 32,
+                          step_mode: Vertex,
+                          attributes: [
+                            (
+                              name: "Vertex_Normal",
+                              format: Float3,
+                              offset: 0,
+                              shader_location: 0,
+                            ),
+                            (
+                              name: "Vertex_Position",
+                              format: Float3,
+                              offset: 12,
+                              shader_location: 0,
+                            ),
+                            (
+                              name: "Vertex_Uv",
+                              format: Float2,
+                              offset: 24,
+                              shader_location: 0,
+                            ),
+                          ],
+                        ),
+                      },
+                      "sample_count": {
+                        "type": "u32",
+                        "value": 1,
+                      },
+                    },
+                  },
+                  "dynamic_bindings_generation": {
+                    "type": "usize",
+                    "value": 2,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
+        "type": "bevy_render::draw::Visible",
+        "struct": {
+          "is_visible": {
+            "type": "bool",
+            "value": true,
+          },
+          "is_transparent": {
+            "type": "bool",
+            "value": false,
+          },
+        },
+      },
+      {
+        "type": "bevy_render::render_graph::base::MainPass",
+        "struct": {},
+      },
+    ],
+  ),
+  (
+    entity: 1,
+    components: [
+      {
+        "type": "bevy_transform::components::transform::Transform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (0.0, 0.0, 0.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_render::camera::camera::Camera",
+        "struct": {
+          "projection_matrix": {
+            "type": "glam::mat4::Mat4",
+            "value": (1.81066, 0.0, 0.0, 0.0, 0.0, 2.4142134, 0.0, 0.0, 0.0, 0.0, -1.001001, -1.0, 0.0, 0.0, -1.001001, 0.0),
+          },
+          "name": {
+            "type": "core::option::Option<alloc::string::String>",
+            "value": Some("Camera3d"),
+          },
+        },
+      },
+      {
+        "type": "bevy_transform::components::global_transform::GlobalTransform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (0.0, 8.0, 0.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_render::camera::visible_entities::VisibleEntities",
+        "struct": {},
+      },
+      {
+        "type": "bevy_render::camera::projection::PerspectiveProjection",
+        "struct": {
+          "fov": {
+            "type": "f32",
+            "value": 0.7853982,
+          },
+          "aspect_ratio": {
+            "type": "f32",
+            "value": 1.3333334,
+          },
+          "near": {
+            "type": "f32",
+            "value": 1.0,
+          },
+          "far": {
+            "type": "f32",
+            "value": 1000.0,
+          },
+        },
+      },
+      {
+        "type": "bevy_transform::components::parent::PreviousParent",
+        "tuple_struct": [
+          {
+            "type": "bevy_ecs::core::entities::Entity",
+            "value": 0,
+          },
+        ],
+      },
+      {
+        "type": "bevy_transform::components::parent::Parent",
+        "tuple_struct": [
+          {
+            "type": "bevy_ecs::core::entities::Entity",
+            "value": 0,
+          },
+        ],
+      },
+    ],
+  ),
+  (
+    entity: 0,
+    components: [
+      {
+        "type": "bevy_transform::components::transform::Transform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (0.0, 8.0, 0.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_transform::components::global_transform::GlobalTransform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (0.0, 8.0, 0.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_render::draw::Draw",
+        "struct": {},
+      },
+      {
+        "type": "bevy_asset::handle::Handle<bevy_render::mesh::mesh::Mesh>",
+        "struct": {
+          "id": {
+            "type": "bevy_asset::handle::HandleId",
+            "value": Id("8ecbac0f-f545-4473-ad43-e1f4243af51e", 12527221847665148063),
+          },
+        },
+      },
+      {
+        "type": "bevy_asset::handle::Handle<bevy_pbr::material::StandardMaterial>",
+        "struct": {
+          "id": {
+            "type": "bevy_asset::handle::HandleId",
+            "value": Id("dace545e-4bc6-4595-a79d-c224fc694975", 697251821056181705),
+          },
+        },
+      },
+      {
+        "type": "bevy_transform::components::children::Children",
+        "tuple_struct": [
+          {
+            "type": "smallvec::SmallVec<[bevy_ecs::core::entities::Entity; 8]>",
+            "list": [
+              {
+                "type": "bevy_ecs::core::entities::Entity",
+                "value": 1,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        "type": "bevy_render::pipeline::render_pipelines::RenderPipelines",
+        "struct": {
+          "pipelines": {
+            "type": "alloc::vec::Vec<bevy_render::pipeline::render_pipelines::RenderPipeline>",
+            "list": [
+              {
+                "type": "bevy_render::pipeline::render_pipelines::RenderPipeline",
+                "struct": {
+                  "pipeline": {
+                    "type": "bevy_asset::handle::Handle<bevy_render::pipeline::pipeline::PipelineDescriptor>",
+                    "struct": {
+                      "id": {
+                        "type": "bevy_asset::handle::HandleId",
+                        "value": Id("ebfc1d11-a2a4-44cb-8f12-c49cc631146c", 13148362314012771389),
+                      },
+                    },
+                  },
+                  "specialization": {
+                    "type": "bevy_render::pipeline::pipeline_compiler::PipelineSpecialization",
+                    "struct": {
+                      "shader_specialization": {
+                        "type": "bevy_render::pipeline::pipeline_compiler::ShaderSpecialization",
+                        "struct": {
+                          "shader_defs": {
+                            "type": "std::collections::hash::set::HashSet<alloc::string::String, ahash::random_state::RandomState>",
+                            "value": [],
+                          },
+                        },
+                      },
+                      "primitive_topology": {
+                        "type": "bevy_render::pipeline::state_descriptors::PrimitiveTopology",
+                        "value": TriangleList,
+                      },
+                      "dynamic_bindings": {
+                        "type": "std::collections::hash::set::HashSet<alloc::string::String, ahash::random_state::RandomState>",
+                        "value": [
+                          "Transform",
+                          "StandardMaterial_albedo",
+                        ],
+                      },
+                      "strip_index_format": {
+                        "type": "core::option::Option<bevy_render::pipeline::state_descriptors::IndexFormat>",
+                        "value": None,
+                      },
+                      "vertex_buffer_layout": {
+                        "type": "bevy_render::pipeline::vertex_buffer_descriptor::VertexBufferLayout",
+                        "value": (
+                          name: "",
+                          stride: 32,
+                          step_mode: Vertex,
+                          attributes: [
+                            (
+                              name: "Vertex_Uv",
+                              format: Float2,
+                              offset: 0,
+                              shader_location: 0,
+                            ),
+                            (
+                              name: "Vertex_Position",
+                              format: Float3,
+                              offset: 8,
+                              shader_location: 0,
+                            ),
+                            (
+                              name: "Vertex_Normal",
+                              format: Float3,
+                              offset: 20,
+                              shader_location: 0,
+                            ),
+                          ],
+                        ),
+                      },
+                      "sample_count": {
+                        "type": "u32",
+                        "value": 1,
+                      },
+                    },
+                  },
+                  "dynamic_bindings_generation": {
+                    "type": "usize",
+                    "value": 2,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
+        "type": "bevy_render::draw::Visible",
+        "struct": {
+          "is_visible": {
+            "type": "bool",
+            "value": true,
+          },
+          "is_transparent": {
+            "type": "bool",
+            "value": false,
+          },
+        },
+      },
+      {
+        "type": "bevy_render::render_graph::base::MainPass",
+        "struct": {},
+      },
+    ],
+  ),
+  (
+    entity: 3,
+    components: [
+      {
+        "type": "bevy_transform::components::transform::Transform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (4.0, 8.0, 4.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_transform::components::global_transform::GlobalTransform",
+        "struct": {
+          "translation": {
+            "type": "glam::vec3::Vec3",
+            "value": (4.0, 8.0, 4.0),
+          },
+          "rotation": {
+            "type": "glam::quat::Quat",
+            "value": (0.0, 0.0, 0.0, 1.0),
+          },
+          "scale": {
+            "type": "glam::vec3::Vec3",
+            "value": (1.0, 1.0, 1.0),
+          },
+        },
+      },
+      {
+        "type": "bevy_pbr::light::Light",
+        "struct": {
+          "color": {
+            "type": "bevy_render::color::Color",
+            "struct": {
+              "red": {
+                "type": "f32",
+                "value": 1.0,
+              },
+              "green": {
+                "type": "f32",
+                "value": 1.0,
+              },
+              "blue": {
+                "type": "f32",
+                "value": 1.0,
+              },
+              "alpha": {
+                "type": "f32",
+                "value": 1.0,
+              },
+            },
+          },
+          "fov": {
+            "type": "f32",
+            "value": 1.0471976,
+          },
+          "depth": {
+            "type": "core::ops::range::Range<f32>",
+            "value": (
+              start: 0.1,
+              end: 50.0,
+            ),
+          },
+        },
+      },
+    ],
+  ),
+]
